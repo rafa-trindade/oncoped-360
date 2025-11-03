@@ -16,8 +16,6 @@ Monitoramento de casos, atendimentos, repasses públicos e estrutura hospitalar 
 | Pacote            | Versão      | Observação |
 |-------------------|------------|------------|
 | **pandas**        | 2.3.3      | Manipulação e transformação de dados |
-| **dbfread**       | 2.0.7      | Leitura de arquivos `.DBF` gerados pelo DATASUS |
+| **dbfread**       | 2.0.7      | Leitura de arquivos `.dbf` gerados pelo DATASUS |
 
-**dbf2dbc.exe** - Executável fornecido pelo DATASUS/TabWin para expansão de arquivos `.DBC` para `.DBF` 
-
-
+**dbf2dbc.exe** - Executável fornecido pelo DATASUS/TabWin para expansão de arquivos `.dbc` para `.dbf` 
