@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.vscode
+
+.venv/
+env/
+ENV/
+venv/
+
+.env
+.env.*
+
+*.dbc
