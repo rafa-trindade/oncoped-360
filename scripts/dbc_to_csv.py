@@ -18,7 +18,7 @@ arquivos_dbc = [f for f in os.listdir(dbc_dir) if f.lower().endswith('.dbc')]
 dfs_infantil = []
 
 if not arquivos_dbc:
-    print("⚠️ Nenhum arquivo .DBC encontrado em data/dbc.")
+    print("Nenhum arquivo .DBC encontrado em data/dbc.")
 else:
     for arquivo in arquivos_dbc:
         caminho_dbc = os.path.join(dbc_dir, arquivo)
