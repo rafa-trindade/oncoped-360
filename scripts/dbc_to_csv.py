@@ -43,9 +43,11 @@ else:
 
     if dfs_infantil:
         df_final = pd.concat(dfs_infantil, ignore_index=True)
-        caminho_final = os.path.join(csv_dir, 'datasus_oncologia_infantil.csv')
+        caminho_final = os.path.join(csv_dir, 'datasus_internacoes_pediatricas.csv')
+        num_linhas = len(df_final)
 
         df_final.to_csv(caminho_final, index=False, encoding='utf-8')
-        print(f"\nTodos os CSVs foram unidos em: {caminho_final}")
+        print(f"\nTodos os CSVs foram unidos em: {caminho_final}.")
+        print(f"\n{num_linhas} linhas.")
     else:
         print("Nenhum registro infantil encontrado nos arquivos DBC.")

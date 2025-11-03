@@ -7,7 +7,7 @@ Monitoramento de casos, atendimentos, repasses públicos e estrutura hospitalar 
 
 `dbc_to_csv.py` 
 - ✅ Download dos arquivos `.dbc` do DATASUS (Painel de Oncologia 2016~2025) e utilização do executável `dbf2dbc.exe` (fornecido pelo DATASUS/TabWin para expansão de arquivos DBC) para conversão automatizada para `.csv`, com filtragem de registros de idade ≤ 19 anos.
-- ✅ Unificação de arquivos intermediários e organização dos dados exportados em `data/raw/datasus_oncologia_infantil.csv`.
+- ✅ Unificação de arquivos intermediários e organização dos dados exportados em `data/raw/datasus_internacoes_pediatricas.csv`.
 
 ---
 
