@@ -1,7 +1,7 @@
 # 🎗️ oncoped-360
 `em desenvolvimento`
 
-Monitoramento de casos, atendimentos, repasses públicos e estrutura hospitalar voltados à oncologia infantojuvenil no Brasil, integrando dados do DATASUS, INCA, CNES e Portal da Transparência.
+Monitoramento de atendimentos, repasses públicos e estrutura hospitalar voltados à oncologia infantojuvenil no Brasil, integrando dados do DATASUS, INCA, CNES e Portal da Transparência.
 
 ## 📄 Relatório de Execução do Projeto:
 
