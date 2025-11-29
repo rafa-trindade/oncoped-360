@@ -1,0 +1,160 @@
+services:
+  postgres:
+    image: postgres:17.5
+    container_name: postgres_dw
+    restart: always 
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "5432:5432"
+    env_file:
+      - .env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  minio:
+    image: minio/minio
+    container_name: minio
+    restart: always
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio_data:/data
+
+  dremio:
+    image: dremio/dremio-oss:latest
+    container_name: dremio
+    restart: always
+    environment:
+      - DREMIO_JAVA_SERVER_MEM=2G
+    ports:
+      - "9047:9047"
+      - "31010:31010"
+      - "45678:45678"
+    volumes:
+      - dremio_data:/opt/dremio/data
+
+  dbt:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.dbt
+    container_name: dbt
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - ./dbt:/app/dbt
+      - ./data:/app/data
+
+  airflow-init:
+    build:
+      context: ./docker
+      dockerfile: Dockerfile.airflow
+    container_name: airflow-init
+    env_file:
+      - .env
+    command: >
+      bash -c "
+      airflow db init &&
+      airflow users create --username admin --firstname Admin --lastname User --role Admin --email admin@example.com --password admin ||
+      true
+      "
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+      - ./airflow/logs:/opt/airflow/logs
+      - ./scripts:/opt/airflow/scripts
+      - ./dremio/staging:/opt/airflow/dremio_staging
+      - ./dremio/scripts:/opt/airflow/dremio_scripts
+      - ./dremio/dremio_project_config.yaml:/opt/airflow/dremio_project_config.yaml
+      - ./data:/opt/airflow/data
+      - ./dbt:/opt/airflow/dbt
+    depends_on:
+      - postgres
+    restart: "no"
+
+  airflow-webserver:
+    build:
+      context: ./docker
+      dockerfile: Dockerfile.airflow
+    container_name: airflow-webserver
+    env_file:
+      - .env
+    command: airflow webserver
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+      - ./airflow/logs:/opt/airflow/logs
+      - ./scripts:/opt/airflow/scripts
+      - ./dremio/staging:/opt/airflow/dremio_staging
+      - ./dremio/scripts:/opt/airflow/dremio_scripts
+      - ./dremio/dremio_project_config.yaml:/opt/airflow/dremio_project_config.yaml
+      - ./data:/opt/airflow/data
+      - ./dbt:/opt/airflow/dbt
+    depends_on:
+      - postgres
+      - airflow-init
+      - minio
+      - dremio
+      - dbt
+    restart: always
+
+  airflow-scheduler:
+    build:
+      context: ./docker
+      dockerfile: Dockerfile.airflow
+    container_name: airflow-scheduler
+    env_file:
+      - .env
+    command: airflow scheduler
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+      - ./airflow/logs:/opt/airflow/logs
+      - ./scripts:/opt/airflow/scripts
+      - ./dremio/staging:/opt/airflow/dremio_staging
+      - ./dremio/scripts:/opt/airflow/dremio_scripts
+      - ./dremio/dremio_project_config.yaml:/opt/airflow/dremio_project_config.yaml
+      - ./data:/opt/airflow/data
+      - ./dbt:/opt/airflow/dbt
+    depends_on:
+      - postgres
+      - airflow-init
+      - minio
+      - dremio
+      - dbt
+    restart: always
+
+  superset:
+    image: apache/superset:4.1.2
+    container_name: superset
+    restart: always
+    environment:
+      SUPERSET_ENV: development
+      SUPERSET_LOAD_EXAMPLES: "no"
+      SUPERSET_SECRET_KEY: ${SUPERSET_SECRET_KEY}
+    ports:
+      - "8088:8088"
+    volumes:
+      - superset_home:/app/superset_home
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_data:
+  minio_data:
+  dremio_data:
+  superset_home:

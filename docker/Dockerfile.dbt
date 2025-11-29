@@ -1,0 +1,12 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+RUN pip install --upgrade pip \
+    && pip install dbt-postgres==1.6.1 psycopg2-binary
+
+COPY ./dbt /app/dbt
+
+WORKDIR /app/dbt
+
+CMD ["tail", "-f", "/dev/null"]
