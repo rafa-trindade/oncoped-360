@@ -79,7 +79,6 @@ services:
       - ./scripts:/opt/airflow/scripts
       - ./dremio/staging:/opt/airflow/dremio_staging
       - ./dremio/scripts:/opt/airflow/dremio_scripts
-      - ./dremio/dremio_project_config.yaml:/opt/airflow/dremio_project_config.yaml
       - ./data:/opt/airflow/data
       - ./dbt:/opt/airflow/dbt
     depends_on:
@@ -102,7 +101,6 @@ services:
       - ./scripts:/opt/airflow/scripts
       - ./dremio/staging:/opt/airflow/dremio_staging
       - ./dremio/scripts:/opt/airflow/dremio_scripts
-      - ./dremio/dremio_project_config.yaml:/opt/airflow/dremio_project_config.yaml
       - ./data:/opt/airflow/data
       - ./dbt:/opt/airflow/dbt
     depends_on:
@@ -127,7 +125,6 @@ services:
       - ./scripts:/opt/airflow/scripts
       - ./dremio/staging:/opt/airflow/dremio_staging
       - ./dremio/scripts:/opt/airflow/dremio_scripts
-      - ./dremio/dremio_project_config.yaml:/opt/airflow/dremio_project_config.yaml
       - ./data:/opt/airflow/data
       - ./dbt:/opt/airflow/dbt
     depends_on:
