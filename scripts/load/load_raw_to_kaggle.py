@@ -3,12 +3,13 @@ import json
 from pathlib import Path
 from kaggle.api.kaggle_api_extended import KaggleApi
 from dotenv import load_dotenv
+from datetime import datetime
 
 load_dotenv() 
 
 KAGGLE_USER = os.getenv('KAGGLE_USERNAME') 
 DATASET_NAME = 'onco-360'
-DATASET_TITLE = 'Dados Onco-360 - Pipeline Semanal'
+DATASET_TITLE = 'Onco-360 - Pipeline Mensal'
 DATA_DIR = Path("/opt/airflow/data/raw") 
 
 
@@ -29,7 +30,8 @@ def load_raw_to_kaggle():
         "title": DATASET_TITLE,
         "id": DATASET_ID,
         "licenses": [{"name": "CC0-1.0"}],
-        "resources": [] 
+        "resources": [],
+        "version": datetime.now().strftime("%Y%m%d")
     }
 
 
@@ -39,10 +41,10 @@ def load_raw_to_kaggle():
         return
 
     metadata_path = DATA_DIR / "dataset-metadata.json"
-    with open(metadata_path, 'w') as f:
+    with open(metadata_path, "w") as f:
         json.dump(metadata, f, indent=4)
-    
     print(f"Metadata criado em: {metadata_path}")
+
 
     try:
 
