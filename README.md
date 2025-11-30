@@ -73,6 +73,13 @@ Abaixo está a visão geral da stack de dados utilizada no projeto:
 
 ---
 
+`scripts/load/load_raw_to_kaggle.py`  
+
+- ✅ Atualização automática do dataset público [onco-360](https://www.kaggle.com/datasets/rafatrindade/onco-360) no Kaggle.  
+- ✅ Integrado ao pipeline do Airflow, garantindo que o Kaggle esteja sempre sincronizado com os dados processados.
+
+---
+
 ## 📦 Bibliotecas Utilizadas:
 
 | Pacote              | Versão     | Observação                                                                       |

@@ -81,6 +81,7 @@ services:
       - ./dremio/scripts:/opt/airflow/dremio_scripts
       - ./data:/opt/airflow/data
       - ./dbt:/opt/airflow/dbt
+      - ./.kaggle/kaggle.json:/home/airflow/.config/kaggle/kaggle.json:ro
     depends_on:
       - postgres
     restart: "no"
@@ -103,6 +104,7 @@ services:
       - ./dremio/scripts:/opt/airflow/dremio_scripts
       - ./data:/opt/airflow/data
       - ./dbt:/opt/airflow/dbt
+      - ./.kaggle/kaggle.json:/home/airflow/.config/kaggle/kaggle.json:ro
     depends_on:
       - postgres
       - airflow-init
@@ -127,6 +129,7 @@ services:
       - ./dremio/scripts:/opt/airflow/dremio_scripts
       - ./data:/opt/airflow/data
       - ./dbt:/opt/airflow/dbt
+      - ./.kaggle/kaggle.json:/home/airflow/.config/kaggle/kaggle.json:ro
     depends_on:
       - postgres
       - airflow-init
