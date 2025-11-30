@@ -32,7 +32,7 @@ Abaixo está a visão geral da stack de dados utilizada no projeto:
 
 `raw_painel_de_oncologia.parquet` – base bruta do Painel de Oncologia do SUS, com dados de diagnósticos e tratamentos oncológicos desde 2013. *(atualização semanal)*
 
-`raw_inca_cancer_populacional.parquet` - base bruta do INCA com registros populacionais de câncer entre 1988 e 2021, contendo informações sociodemográficas, clínicas, diagnósticas e de seguimento dos pacientes, incluindo dados sobre topografia, morfologia, estadiamento, tratamento e desfecho vital. *(versão estática - 1988 a 2021*
+`raw_inca_cancer_populacional.parquet` - base bruta do INCA com registros populacionais de câncer entre 1988 e 2021, contendo informações sociodemográficas, clínicas, diagnósticas e de seguimento dos pacientes, incluindo dados sobre topografia, morfologia, estadiamento, tratamento e desfecho vital. *(versão estática - 1988 a 2021)*
 
 `raw_macroregiao_de_saude.parquet` – lista de municípios com as informações de macrorregião e região de saúde. *(atualização semanal)*
 
@@ -82,20 +82,23 @@ Atualização automática do dataset público [Onco-360](https://www.kaggle.com/
 
 `scripts/load/load_raw_to_kaggle.py`  
 
-- ✅ Atualização automática do dataset público [onco-360](https://www.kaggle.com/datasets/rafatrindade/onco-360) no Kaggle.  
+- ✅ Atualização automática do dataset público [onco-360](https://www.kaggle.com/datasets/rafatrindade/onco-360) via API do Kaggle.
 - ✅ Integrado ao pipeline do Airflow, garantindo que o Kaggle esteja sempre sincronizado com os dados processados.
 
 ---
 
 ## 📦 Bibliotecas Utilizadas:
 
-| Pacote              | Versão     | Observação                                                                       |
-|---------------------|------------|----------------------------------------------------------------------------------|
-| **pandas**          | 2.3.3      | Manipulação e transformação de dados                                             |
-| **dbfread**         | 2.0.7      | Leitura de arquivos `.dbf` gerados pelo DATASUS                                  |
-| **boto3**           | 1.28.17    | Integração com API S3/MinIO para upload de arquivos                              |
-| **dbt-postgres**    | 1.6.1      | Modelagem e transformação de dados no warehouse PostgreSQL usando dbt            |
-| **psycopg2-binary** | 2.9.7      | Driver PostgreSQL utilizado para conexão com o banco de dados                    |
-| **datasus-dbc**     | 0.1.3      | Descompressão de arquivos `.dbc` do DATASUS em `.dbf` via bindings em Python     |
-| **pyarrow**         | 11.0.0     | Suporte à leitura e escrita de arquivos Parquet                                  |
+| Pacote              | Versão       | Observação                                                                       |
+|---------------------|-------------|----------------------------------------------------------------------------------|
+| **pandas**          | 2.3.3       | Manipulação e transformação de dados                                             |
+| **dbfread**         | 2.0.7       | Leitura de arquivos `.dbf` gerados pelo DATASUS                                  |
+| **boto3**           | 1.28.17     | Integração com API S3/MinIO para upload de arquivos                              |
+| **dbt-postgres**    | 1.6.1       | Modelagem e transformação de dados no warehouse PostgreSQL usando dbt            |
+| **psycopg2-binary** | 2.9.7       | Driver PostgreSQL utilizado para conexão com o banco de dados                    |
+| **datasus-dbc**     | 0.1.3       | Descompressão de arquivos `.dbc` do DATASUS em `.dbf` via bindings em Python     |
+| **pyarrow**         | 11.0.0      | Suporte à leitura e escrita de arquivos Parquet                                  |
+| **python-dotenv**   | latest      | Carregamento de variáveis de ambiente a partir de arquivos `.env`                |
+| **kaggle**          | 1.7.4.5     | Integração com a API do Kaggle para upload e gerenciamento de datasets           |
+
 
