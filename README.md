@@ -34,6 +34,10 @@ Abaixo está a visão geral da stack de dados utilizada no projeto:
 
 `raw_inca_cancer_populacional.parquet` - base bruta do INCA com registros populacionais de câncer entre 1988 e 2021, contendo informações sociodemográficas, clínicas, diagnósticas e de seguimento dos pacientes, incluindo dados sobre topografia, morfologia, estadiamento, tratamento e desfecho vital. *(versão estática - 1988 a 2021)*
 
+`raw_inca_registro_hospitalar.parquet` – base bruta dos Registros Hospitalares de Câncer (RHC/INCA), com informações de casos atendidos em hospitais habilitados, incluindo variáveis sociodemográficas, clínicas, diagnósticas, terapêuticas e de seguimento dos pacientes oncológicos no âmbito hospitalar. *(versão estática – 1985 a 2023)*
+
+`raw_cnes_estabelecimentos.parquet` – base bruta do CNES (Cadastro Nacional de Estabelecimentos de Saúde) com informações dos estabelecimentos de saúde no Brasil, incluindo tipo de unidade, gestão, endereço, município, esfera administrativa e outros atributos. *(atualização semanal)*
+
 `raw_macroregiao_de_saude.parquet` – lista de municípios com as informações de macrorregião e região de saúde. *(atualização semanal)*
 
 `raw_metadados.csv` – arquivo de metadados gerado automaticamente pelo pipeline, com histórico das extrações, incluindo nome do arquivo, data/hora da extração, número de registros e tamanho (em MiB) de cada dataset presente no Data Lake. *(atualização semanal)*
@@ -41,8 +45,6 @@ Abaixo está a visão geral da stack de dados utilizada no projeto:
 ### ⏳ Em Desenvolvimento:
 ---
 `raw_siasus_quimioterapia.parquet` – base bruta do SIA/SUS (Sistema de Informações Ambulatoriais do SUS) sobre procedimentos de quimioterapia ambulatorial, contendo informações administrativas e assistenciais do tratamento oncológico.
-
-`raw_cnes_estabelecimentos.parquet` – base bruta do CNES (Cadastro Nacional de Estabelecimentos de Saúde) com informações dos estabelecimentos de saúde no Brasil, incluindo tipo de unidade, gestão, endereço, município, esfera administrativa e outros atributos.
 
 `raw_siops_orcamento_publico.parquet` – base bruta do SIOPS com informações sobre orçamento e execução orçamentária em saúde, incluindo receitas e despesas dos municípios, estados, Distrito Federal e União.
 
