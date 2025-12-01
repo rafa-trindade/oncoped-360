@@ -2,3 +2,6 @@ data_extracao,arquivo,numero_registros,tamanho_mib
 2025-11-30 16:16:18,raw_macroregiao_de_saude.parquet,5570,0.13
 2025-11-30 16:16:18,raw_painel_de_oncologia.parquet,5227873,106.08
 2025-11-30 16:16:18,raw_inca_cancer_populacional.parquet,291038,6.82
+2025-12-01 01:02:54,raw_macroregiao_de_saude.parquet,5570,0.13
+2025-12-01 01:02:54,raw_painel_de_oncologia.parquet,5227873,106.08
+2025-12-01 01:02:54,raw_inca_cancer_populacional.parquet,2368916,48.15
