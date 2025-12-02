@@ -4,3 +4,5 @@ data_extracao,arquivo,numero_registros,tamanho_mib
 2025-12-01 14:08:23,raw_painel_de_oncologia.parquet,5227873,106.08
 2025-12-01 14:08:23,raw_inca_registro_hospitalar.parquet,5399686,111.66
 2025-12-01 14:08:23,raw_inca_cancer_populacional.parquet,2368916,48.15
+2025-12-02 22:29:46,raw_sistema_info_mortalidade_prelim.parquet,1527369,93.93
+2025-12-02 22:29:46,raw_sistema_info_mortalidade.parquet,11688306,689.54

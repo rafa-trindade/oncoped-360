@@ -30,28 +30,33 @@ Abaixo está a visão geral da stack de dados utilizada no projeto:
 
 ![Data Lake](docs/minio.png)
 
-`raw_painel_de_oncologia.parquet` – base bruta do Painel de Oncologia do SUS, com dados de diagnósticos e tratamentos oncológicos desde 2013. *(atualização semanal)*
+`raw_cnes_estabelecimentos.parquet` – base bruta do CNES (Cadastro Nacional de Estabelecimentos de Saúde) com informações dos estabelecimentos de saúde no Brasil, incluindo tipo de unidade, gestão, endereço, município, esfera administrativa e outros atributos. *(quando disponível, atualização semanal)*
 
 `raw_inca_cancer_populacional.parquet` - base bruta do INCA com registros populacionais de câncer entre 1988 e 2021, contendo informações sociodemográficas, clínicas, diagnósticas e de seguimento dos pacientes, incluindo dados sobre topografia, morfologia, estadiamento, tratamento e desfecho vital. *(versão estática - 1988 a 2021)*
 
 `raw_inca_registro_hospitalar.parquet` – base bruta dos Registros Hospitalares de Câncer (RHC/INCA), com informações de casos atendidos em hospitais habilitados, incluindo variáveis sociodemográficas, clínicas, diagnósticas, terapêuticas e de seguimento dos pacientes oncológicos no âmbito hospitalar. *(versão estática – 1985 a 2023)*
 
-`raw_cnes_estabelecimentos.parquet` – base bruta do CNES (Cadastro Nacional de Estabelecimentos de Saúde) com informações dos estabelecimentos de saúde no Brasil, incluindo tipo de unidade, gestão, endereço, município, esfera administrativa e outros atributos. *(atualização semanal)*
+`raw_macroregiao_de_saude.parquet` – lista de municípios com as informações de macrorregião e região de saúde. *(quando disponível, atualização semanal)*
 
-`raw_macroregiao_de_saude.parquet` – lista de municípios com as informações de macrorregião e região de saúde. *(atualização semanal)*
+`raw_painel_de_oncologia.parquet` – base bruta do Painel de Oncologia do SUS, com dados de diagnósticos e tratamentos oncológicos desde 2013. *(atualização mensal)*
+
+`raw_sistema_info_mortalidade_prelim.parquet` – base preliminar do último ano disponível no SIM/SUS (Sistema de Informação sobre Mortalidade), com registros de óbitos no Brasil, provenientes das declarações de óbito do DATASUS. *(quando disponível, atualização semanal)*
+
+`raw_sistema_info_mortalidade.parquet` – base bruta consolidada do SIM/SUS (Sistema de Informação sobre Mortalidade), com registros de óbitos no Brasil desde 2016 (Dados Consolidados CID10), provenientes das declarações de óbito do DATASUS. *(atualização anual)*
 
 `raw_metadados.csv` – arquivo de metadados gerado automaticamente pelo pipeline, com histórico das extrações, incluindo nome do arquivo, data/hora da extração, número de registros e tamanho (em MiB) de cada dataset presente no Data Lake. *(atualização semanal)*
+
 
 ### ⏳ Em Desenvolvimento:
 ---
 
-`raw_siops_orcamento_publico.parquet` – base bruta do SIOPS com informações sobre orçamento e execução orçamentária em saúde, incluindo receitas e despesas dos municípios, estados, Distrito Federal e União.
+- `raw_siops_orcamento_publico.parquet` – base bruta do SIOPS com informações sobre orçamento e execução orçamentária em saúde, incluindo receitas e despesas dos municípios, estados, Distrito Federal e União. *(quando disponível, atualização semanal)*
 
 ### ☁️ Integração com Kaggle [Onco-360](https://www.kaggle.com/datasets/rafatrindade/onco-360)
 
 Atualização automática do dataset público [Onco-360](https://www.kaggle.com/datasets/rafatrindade/onco-360) no Kaggle a partir do pipeline no Airflow, garantindo que todos os dados processados estejam sempre sincronizados e disponíveis para análise.  
 
-![Onco-360](docs/kaggle-onco-dag.png)
+![Onco-360](docs/kaggle-att.png)
 
 ---
 
@@ -70,6 +75,38 @@ Atualização automática do dataset público [Onco-360](https://www.kaggle.com/
 - ✅ Conversão automatizada de arquivos `.dbc` para `.dbf` usando a biblioteca `datasus-dbc` (Python), com processamento iterativo para melhor performance.
 - ✅ Geração de um único dataset consolidado:
   - `data/raw/raw_painel_de_oncologia.parquet`
+
+---
+
+`scripts/extract/datasus/fetch_datasus_sim.py`  
+
+- ✅ Download e atualização incremental dos arquivos `.dbc` do SIM DATASUS (Sistema de Informação de Mortalidade) Dados Consolidados CID10, conectando ao FTP público (`ftp.datasus.gov.br/dissemin/publicos/SIM/CID10/DORES`).  
+- ✅ Verificação de integridade por tamanho: se o `.dbc` já existir com o mesmo tamanho do FTP, é pulado.
+- ✅ Pensado para ser executado de forma recorrente (orquestração/pipeline) para manter o repositório de DBC sempre atualizado.
+
+---
+
+`scripts/extract/datasus/process_datasus_sim.py`  
+
+- ✅ Conversão automatizada de arquivos `.dbc` para `.dbf` usando a biblioteca `datasus-dbc` (Python), com processamento iterativo para melhor performance.
+- ✅ Geração de um único dataset consolidado:
+  - `data/raw/raw_sistema_info_mortalidade.parquet`
+
+---
+
+`scripts/extract/datasus/fetch_datasus_sim_prelim.py`  
+
+- ✅ Download e atualização incremental dos arquivos `.dbc` do SIM DATASUS (Sistema de Informação de Mortalidade) Dados Preliminares, conectando ao FTP público (`ftp.datasus.gov.br/dissemin/publicos/SIM/PRELIM/DORES`).  
+- ✅ Verificação de integridade por tamanho: se o `.dbc` já existir com o mesmo tamanho do FTP, é pulado. Senão, sobrescreve.
+- ✅ Pensado para ser executado de forma recorrente (orquestração/pipeline) para manter o repositório de DBC sempre atualizado.
+
+---
+
+`scripts/extract/datasus/process_datasus_sim_prelim.py`  
+
+- ✅ Conversão automatizada de arquivos `.dbc` para `.dbf` usando a biblioteca `datasus-dbc` (Python), com processamento iterativo para melhor performance.
+- ✅ Geração de um único dataset consolidado:
+  - `data/raw/raw_sistema_info_mortalidade_prelim.parquet`
 
 ---
 

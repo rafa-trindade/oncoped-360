@@ -16,7 +16,7 @@ default_args = {
 SCRIPTS_PATH = "/opt/airflow/scripts"
 
 # ----------------------------
-# Fetch / Process OncoDados
+# Fetch / Process Painel de Oncologia
 # ----------------------------
 
 def fetch_datasus_po(ti=None):
@@ -35,6 +35,52 @@ def process_datasus_po_if_updated(ti=None):
     arquivos_atualizados = ti.xcom_pull(key="arquivos_atualizados", task_ids="fetch_datasus_po")
     if arquivos_atualizados:
         os.system(f"python {os.path.join(SCRIPTS_PATH, 'extract/datasus/process_datasus_po.py')}")
+    else:
+        print("[INFO] Nenhuma atualização nos arquivos DBC. Pulando processamento.")
+
+# ----------------------------
+# Fetch / Process Sistema de Informação sobre Mortalidade (SIM) - Consolidados
+# ----------------------------
+
+def fetch_datasus_sim(ti=None):
+    result = subprocess.run(
+        ["python", os.path.join(SCRIPTS_PATH, "extract/datasus/fetch_datasus_sim.py")],
+        capture_output=True,
+        text=True
+    )
+    print(result.stdout)
+    print(result.stderr)
+    updated = result.returncode == 0
+    ti.xcom_push(key="arquivos_atualizados", value=updated)
+    return updated
+
+def process_datasus_sim_if_updated(ti=None):
+    arquivos_atualizados = ti.xcom_pull(key="arquivos_atualizados", task_ids="fetch_datasus_sim")
+    if arquivos_atualizados:
+        os.system(f"python {os.path.join(SCRIPTS_PATH, 'extract/datasus/process_datasus_sim.py')}")
+    else:
+        print("[INFO] Nenhuma atualização nos arquivos DBC. Pulando processamento.")
+
+# ----------------------------
+# Fetch / Process Sistema de Informação sobre Mortalidade (SIM) - Preliminares
+# ----------------------------
+
+def fetch_datasus_sim_prelim(ti=None):
+    result = subprocess.run(
+        ["python", os.path.join(SCRIPTS_PATH, "extract/datasus/fetch_datasus_sim_prelim.py")],
+        capture_output=True,
+        text=True
+    )
+    print(result.stdout)
+    print(result.stderr)
+    updated = result.returncode == 0
+    ti.xcom_push(key="arquivos_atualizados", value=updated)
+    return updated
+
+def process_datasus_sim_prelim_if_updated(ti=None):
+    arquivos_atualizados = ti.xcom_pull(key="arquivos_atualizados", task_ids="fetch_datasus_sim_prelim")
+    if arquivos_atualizados:
+        os.system(f"python {os.path.join(SCRIPTS_PATH, 'extract/datasus/process_datasus_sim_prelim.py')}")
     else:
         print("[INFO] Nenhuma atualização nos arquivos DBC. Pulando processamento.")
 
@@ -84,6 +130,26 @@ with DAG(
         python_callable=process_datasus_po_if_updated
     )
 
+    fetch_task_datasus_sim = PythonOperator(
+        task_id='fetch_datasus_sim',
+        python_callable=fetch_datasus_sim
+    )
+
+    process_task_datasus_sim = PythonOperator(
+        task_id='process_datasus_sim',
+        python_callable=process_datasus_sim_if_updated
+    )
+
+    fetch_task_datasus_sim_prelim = PythonOperator(
+        task_id='fetch_datasus_sim_prelim',
+        python_callable=fetch_datasus_sim_prelim
+    )
+
+    process_task_datasus_sim_prelim = PythonOperator(
+        task_id='process_datasus_sim_prelim',
+        python_callable=process_datasus_sim_prelim_if_updated
+    )
+
     sync_raw_to_bucket = PythonOperator(
         task_id='load_raw_to_bucket',
         python_callable=load_raw_to_bucket
@@ -94,4 +160,7 @@ with DAG(
         python_callable=load_raw_to_kaggle_if_bucket_updated
     )
 
-    fetch_task_datasus_po >> process_task_datasus_po >> sync_raw_to_bucket >> sync_raw_to_kaggle
+    fetch_task_datasus_po >> process_task_datasus_po >> \
+    fetch_task_datasus_sim >> process_task_datasus_sim >> \
+    fetch_task_datasus_sim_prelim >> process_task_datasus_sim_prelim >> \
+    sync_raw_to_bucket >> sync_raw_to_kaggle
