@@ -51,8 +51,7 @@ Abaixo está a visão geral da stack de dados utilizada no projeto:
 
 Atualização automática do dataset público [Onco-360](https://www.kaggle.com/datasets/rafatrindade/onco-360) no Kaggle a partir do pipeline do Airflow, garantindo que todos os dados processados estejam sempre sincronizados e disponíveis para análise.  
 
-![Onco-360](docs/kaggle-onco-360.png)
-
+![Onco-360](docs/kaggle-onco-dag.png)
 
 ---
 
