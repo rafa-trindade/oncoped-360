@@ -44,7 +44,6 @@ Abaixo está a visão geral da stack de dados utilizada no projeto:
 
 ### ⏳ Em Desenvolvimento:
 ---
-`raw_siasus_quimioterapia.parquet` – base bruta do SIA/SUS (Sistema de Informações Ambulatoriais do SUS) sobre procedimentos de quimioterapia ambulatorial, contendo informações administrativas e assistenciais do tratamento oncológico.
 
 `raw_siops_orcamento_publico.parquet` – base bruta do SIOPS com informações sobre orçamento e execução orçamentária em saúde, incluindo receitas e despesas dos municípios, estados, Distrito Federal e União.
 
@@ -104,3 +103,12 @@ Atualização automática do dataset público [Onco-360](https://www.kaggle.com/
 | **kaggle**          | 1.7.4.5     | Integração com a API do Kaggle para upload e gerenciamento de datasets           |
 
 
+flowchart TD
+    A[fetch_datasus_po<br/>(baixar DBCs do DATASUS)] -->|arquivos_atualizados=True| B[process_datasus_po_if_updated<br/>(processa DBC para Parquet)]
+    A -->|arquivos_atualizados=False| B_skip[process_datasus_po pulado]
+
+    B --> C[load_raw_to_bucket<br/>(envia novos/alterados para MinIO)]
+    B_skip --> C
+
+    C -->|bucket_updated=True| D[load_raw_to_kaggle_if_bucket_updated<br/>(envia para Kaggle)]
+    C -->|bucket_updated=False| D_skip[load_raw_to_kaggle pulado]

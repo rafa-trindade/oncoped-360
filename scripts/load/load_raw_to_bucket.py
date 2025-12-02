@@ -1,6 +1,5 @@
 import os
 from datetime import datetime
-
 import pandas as pd
 import boto3
 from botocore.exceptions import NoCredentialsError
@@ -23,27 +22,18 @@ MINIO_ACCESS_KEY = os.environ["MINIO_ROOT_USER"]
 MINIO_SECRET_KEY = os.environ["MINIO_ROOT_PASSWORD"]
 MINIO_BUCKET = os.environ["MINIO_BUCKET"]
 
-
 def bytes_to_mib(size_bytes: int) -> float:
-    """Converte bytes para MiB com 2 casas decimais."""
     if size_bytes is None:
         return 0.0
     return round(size_bytes / (1024 ** 2), 2)
 
-
 def contar_linhas_csv(caminho: str, chunksize: int = 100_000) -> int:
-    """Conta linhas de CSV em chunks para não estourar memória."""
     total = 0
     for chunk in pd.read_csv(caminho, chunksize=chunksize):
         total += len(chunk)
     return total
 
-
 def contar_linhas_parquet(caminho: str) -> int:
-    """
-    Conta linhas de Parquet.
-    Prioriza usar metadata (pyarrow). Se não tiver, cai pro pandas (mais pesado).
-    """
     if HAS_PYARROW:
         parquet_file = pq.ParquetFile(caminho)
         return parquet_file.metadata.num_rows
@@ -51,19 +41,13 @@ def contar_linhas_parquet(caminho: str) -> int:
         df = pd.read_parquet(caminho)
         return len(df)
 
-
 def coletar_metadados_raw():
-    """
-    Lê arquivos CSV/Parquet em data/raw e gera/atualiza raw_metadados.csv.
-    Retorna o caminho do arquivo de metadados.
-    """
     if not os.path.exists(RAW_DIR):
         print(f"Pasta '{RAW_DIR}' não encontrada. Nada para processar.")
-        return None
+        return None, pd.DataFrame()
 
     arquivos = [
-        f
-        for f in os.listdir(RAW_DIR)
+        f for f in os.listdir(RAW_DIR)
         if os.path.isfile(os.path.join(RAW_DIR, f))
         and (f.lower().endswith(".csv") or f.lower().endswith(".parquet"))
         and f != os.path.basename(METADADOS_FILE)
@@ -71,10 +55,20 @@ def coletar_metadados_raw():
 
     if not arquivos:
         print(f"Nenhum arquivo CSV ou Parquet encontrado em '{RAW_DIR}'.")
-        return None
+        return None, pd.DataFrame()
 
-    registros = []
     data_extracao = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+
+    if os.path.exists(METADADOS_FILE):
+        try:
+            df_existente = pd.read_csv(METADADOS_FILE)
+        except Exception as e:
+            print(f"Erro ao ler metadados existentes, sobrescrevendo arquivo: {e}")
+            df_existente = pd.DataFrame(columns=["data_extracao", "arquivo", "numero_registros", "tamanho_mib"])
+    else:
+        df_existente = pd.DataFrame(columns=["data_extracao", "arquivo", "numero_registros", "tamanho_mib"])
+
+    registros_para_adicionar = []
 
     for arquivo in arquivos:
         caminho_arquivo = os.path.join(RAW_DIR, arquivo)
@@ -87,99 +81,84 @@ def coletar_metadados_raw():
             else:
                 num_registros = contar_linhas_parquet(caminho_arquivo)
 
-            registros.append(
-                {
+            df_arquivo = df_existente[df_existente["arquivo"] == arquivo]
+            existe_mesmo = any(
+                (df_arquivo["numero_registros"] == num_registros) &
+                (df_arquivo["tamanho_mib"] == tamanho_mib)
+            )
+
+            if not existe_mesmo:
+                registros_para_adicionar.append({
                     "data_extracao": data_extracao,
                     "arquivo": arquivo,
                     "numero_registros": num_registros,
                     "tamanho_mib": tamanho_mib,
-                }
-            )
-
-            print(
-                f"Coletado metadado de '{arquivo}': "
-                f"{num_registros} registros, {tamanho_mib} MiB"
-            )
+                })
+                print(f"Coletado metadado de '{arquivo}': {num_registros} registros, {tamanho_mib} MiB")
+            else:
+                print(f"Nenhuma alteração para '{arquivo}', não adicionando registro.")
 
         except Exception as e:
             print(f"Erro ao processar '{caminho_arquivo}': {e}")
 
-    if not registros:
-        print("Nenhum metadado gerado.")
-        return None
+    if registros_para_adicionar:
+        df_final = pd.concat([df_existente, pd.DataFrame(registros_para_adicionar)], ignore_index=True)
+        df_final.to_csv(METADADOS_FILE, index=False)
+        print(f"Metadados atualizados em '{METADADOS_FILE}'.")
 
-    df_novo = pd.DataFrame(registros)
-
-    if os.path.exists(METADADOS_FILE):
-        try:
-            df_existente = pd.read_csv(METADADOS_FILE)
-            df_final = pd.concat([df_existente, df_novo], ignore_index=True)
-        except Exception as e:
-            print(f"Erro ao ler metadados existentes, sobrescrevendo arquivo: {e}")
-            df_final = df_novo
-    else:
-        df_final = df_novo
-
-    df_final.to_csv(METADADOS_FILE, index=False)
-    print(f"Metadados salvos em '{METADADOS_FILE}'.")
-    return METADADOS_FILE
-
+    return METADADOS_FILE, pd.DataFrame(registros_para_adicionar)
 
 def criar_s3_client():
-    """Cria cliente S3/MinIO."""
     s3_client = boto3.client(
         "s3",
         endpoint_url=MINIO_ENDPOINT,
         aws_access_key_id=MINIO_ACCESS_KEY,
         aws_secret_access_key=MINIO_SECRET_KEY,
     )
-
     try:
         s3_client.head_bucket(Bucket=MINIO_BUCKET)
     except Exception:
         print(f"Bucket '{MINIO_BUCKET}' não encontrado. Criando...")
         s3_client.create_bucket(Bucket=MINIO_BUCKET)
-
     return s3_client
 
-
-def enviar_pasta_raw_para_minio():
-    """Envia todos os arquivos da pasta raw para o bucket MinIO."""
+def enviar_pasta_raw_para_minio(df_novos_metadados=None) -> bool:
+    """Retorna True se enviou algum arquivo"""
     if not os.path.exists(RAW_DIR):
         print(f"Pasta '{RAW_DIR}' não encontrada. Nada para enviar.")
-        return
+        return False
 
-    arquivos = [
-        f
-        for f in os.listdir(RAW_DIR)
-        if os.path.isfile(os.path.join(RAW_DIR, f))
-    ]
-
-    if not arquivos:
-        print(f"Nenhum arquivo encontrado em '{RAW_DIR}'.")
-        return
+    if df_novos_metadados is None or df_novos_metadados.empty:
+        print("Nenhum arquivo alterado para enviar.")
+        return False
 
     s3_client = criar_s3_client()
+    enviados = False
 
-    for arquivo in arquivos:
+    for _, row in df_novos_metadados.iterrows():
+        arquivo = row["arquivo"]
         caminho_arquivo = os.path.join(RAW_DIR, arquivo)
         try:
             s3_client.upload_file(caminho_arquivo, MINIO_BUCKET, arquivo)
-            print(
-                f"Arquivo '{caminho_arquivo}' enviado para MinIO "
-                f"no bucket '{MINIO_BUCKET}' como '{arquivo}'."
-            )
+            print(f"Arquivo '{caminho_arquivo}' enviado para MinIO no bucket '{MINIO_BUCKET}' como '{arquivo}'.")
+            enviados = True
         except NoCredentialsError:
             print("Erro: credenciais do MinIO inválidas.")
             break
         except Exception as e:
             print(f"Erro ao enviar '{caminho_arquivo}': {e}")
 
+    return enviados
 
-def main():
-    coletar_metadados_raw()
-    enviar_pasta_raw_para_minio()
-
+def main() -> bool:
+    _, df_novos = coletar_metadados_raw()
+    enviados = enviar_pasta_raw_para_minio(df_novos)
+    if enviados:
+        print("[INFO] Arquivos enviados ao bucket.")
+    else:
+        print("[INFO] Nenhum arquivo novo ou alterado para enviar.")
+    return enviados
 
 if __name__ == "__main__":
-    main()
+    updated = main()
+    exit(0 if updated else 1) # código de saída 0 se houve atualização, 1 caso contrário

@@ -1,5 +1,5 @@
 """
-PO - Painel de Oncologia - desde  2013
+PO - Painel de Oncologia - desde 2013
 Baixa arquivos .dbc do FTP do DATASUS (Painel Oncologia)
 """
 import os
@@ -13,10 +13,6 @@ def ensure_output_dir(path: str):
     os.makedirs(path, exist_ok=True)
 
 def listar_arquivos_dbc(ftp: FTP):
-    """
-    Lista apenas arquivos .dbc no diretório FTP_DIR.
-    Retorna uma lista de nomes de arquivo (sem caminho).
-    """
     arquivos = []
 
     def coletor(nome):
@@ -25,26 +21,15 @@ def listar_arquivos_dbc(ftp: FTP):
 
     ftp.cwd(FTP_DIR)
     ftp.retrlines("NLST", coletor)
-
     return arquivos
 
 def get_tamanho_ftp(ftp: FTP, nome_arquivo: str) -> int | None:
-    """
-    Retorna o tamanho do arquivo no FTP (em bytes), ou None se não conseguir.
-    """
     try:
         return ftp.size(nome_arquivo)
     except error_perm:
         return None
 
 def precisa_baixar(ftp: FTP, nome_arquivo: str, pasta_saida: str) -> bool:
-    """
-    Decide se precisa baixar o arquivo:
-    - se não existe localmente -> precisa
-    - se existe e tamanho no FTP for conhecido e diferente -> precisa
-    - se existe e tamanho for igual -> não precisa
-    - se não for possível obter tamanho no FTP -> baixa só se não existir
-    """
     local_path = os.path.join(pasta_saida, nome_arquivo)
 
     if not os.path.exists(local_path):
@@ -66,35 +51,47 @@ def precisa_baixar(ftp: FTP, nome_arquivo: str, pasta_saida: str) -> bool:
               f"(local: {tamanho_local}, FTP: {tamanho_ftp}) -> rebaixando.")
         return True
 
-def baixar_arquivo(ftp: FTP, nome_arquivo: str, pasta_saida: str):
+def baixar_arquivo(ftp: FTP, nome_arquivo: str, pasta_saida: str) -> bool:
+    """
+    Retorna True se o arquivo foi baixado/atualizado.
+    """
     local_path = os.path.join(pasta_saida, nome_arquivo)
 
     if not precisa_baixar(ftp, nome_arquivo, pasta_saida):
-        return
+        return False
 
     print(f"[DOWN] {nome_arquivo}")
     with open(local_path, "wb") as f:
         ftp.retrbinary(f"RETR {nome_arquivo}", f.write)
 
     print(f"[OK] {local_path}")
+    return True
 
-def main():
+def main() -> bool:
     ensure_output_dir(OUTPUT_DIR)
 
     print(f"Conectando a {FTP_HOST}...")
+    arquivos_baixados = False
     with FTP(FTP_HOST, timeout=60) as ftp:
         ftp.login()  # anônimo
         arquivos = listar_arquivos_dbc(ftp)
 
         if not arquivos:
             print("Nenhum .dbc encontrado.")
-            return
+            return False
 
         print(f"Encontrados {len(arquivos)} arquivos .dbc.")
         for arq in arquivos:
-            baixar_arquivo(ftp, arq, OUTPUT_DIR)
+            if baixar_arquivo(ftp, arq, OUTPUT_DIR):
+                arquivos_baixados = True
 
-    print("Fim.")
+    if arquivos_baixados:
+        print("[INFO] Arquivos novos/atualizados.")
+    else:
+        print("[INFO] Nenhum arquivo novo ou atualizado.")
+
+    return arquivos_baixados
 
 if __name__ == "__main__":
-    main()
+    updated = main()
+    exit(0 if updated else 1)  # código de saída 0 se houve atualização, 1 caso contrário
