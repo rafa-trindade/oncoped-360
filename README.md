@@ -28,7 +28,7 @@ Abaixo está a visão geral da stack de dados utilizada no projeto:
 
 ## 🪣 Bucket MinIO (Data Lake) `em implementação`
 
-![Data Lake](docs/datalake.png)
+![Data Lake](docs/minio.png)
 
 `raw_painel_de_oncologia.parquet` – base bruta do Painel de Oncologia do SUS, com dados de diagnósticos e tratamentos oncológicos desde 2013. *(atualização semanal)*
 
@@ -49,7 +49,7 @@ Abaixo está a visão geral da stack de dados utilizada no projeto:
 
 ### ☁️ Integração com Kaggle [Onco-360](https://www.kaggle.com/datasets/rafatrindade/onco-360)
 
-Atualização automática do dataset público [Onco-360](https://www.kaggle.com/datasets/rafatrindade/onco-360) no Kaggle a partir do pipeline do Airflow, garantindo que todos os dados processados estejam sempre sincronizados e disponíveis para análise.  
+Atualização automática do dataset público [Onco-360](https://www.kaggle.com/datasets/rafatrindade/onco-360) no Kaggle a partir do pipeline no Airflow, garantindo que todos os dados processados estejam sempre sincronizados e disponíveis para análise.  
 
 ![Onco-360](docs/kaggle-onco-dag.png)
 
