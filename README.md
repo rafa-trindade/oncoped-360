@@ -40,17 +40,19 @@ Abaixo está a visão geral da stack de dados utilizada no projeto:
 
 `raw_painel_de_oncologia.parquet` – base bruta do Painel de Oncologia do SUS, com dados de diagnósticos e tratamentos oncológicos desde 2013. *(atualização mensal)*
 
+`raw_siops_exec_rreo.parquet` – base bruta estadual das despesas do RREO (Relatório Resumido da Execução Orçamentária) do SUS, com dados desde 2020. *(atualização semestral)*
+
+`raw_siops_exec_saude.parquet` – base bruta estadual da Despesa total em saúde por fonte e subfunção do SUS, com dados desde 2020. *(atualização semestral)*
+
+`raw_siops_indicadores.parquet` – base bruta estadual de indicadores de saúde do SUS, com dados desde 2013. *(atualização semestral)*
+
 `raw_sistema_info_mortalidade_prelim.parquet` – base preliminar do último ano disponível no SIM/SUS (Sistema de Informação sobre Mortalidade), com registros de óbitos no Brasil, provenientes das declarações de óbito do DATASUS. *(quando disponível, atualização semanal)*
 
 `raw_sistema_info_mortalidade.parquet` – base bruta consolidada do SIM/SUS (Sistema de Informação sobre Mortalidade), com registros de óbitos no Brasil desde 2016 (Dados Consolidados CID10), provenientes das declarações de óbito do DATASUS. *(atualização anual)*
 
 `raw_metadados.csv` – arquivo de metadados gerado automaticamente pelo pipeline, com histórico das extrações, incluindo nome do arquivo, data/hora da extração, número de registros e tamanho (em MiB) de cada dataset presente no Data Lake. *(atualização semanal)*
 
-
-### ⏳ Em Desenvolvimento:
 ---
-
-- `raw_siops_orcamento_publico.parquet` – base bruta do SIOPS com informações sobre orçamento e execução orçamentária em saúde, incluindo receitas e despesas dos municípios, estados, Distrito Federal e União. *(quando disponível, atualização semanal)*
 
 ### ☁️ Integração com Kaggle [Onco-360](https://www.kaggle.com/datasets/rafatrindade/onco-360)
 
