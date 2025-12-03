@@ -101,10 +101,6 @@ Atualização automática do dataset público [Onco-360](https://www.kaggle.com/
 - ✅ Download e atualização incremental dos arquivos `.dbc` do SIM DATASUS (Sistema de Informação de Mortalidade) Dados Preliminares, conectando ao FTP público (`ftp.datasus.gov.br/dissemin/publicos/SIM/PRELIM/DORES`).  
 - ✅ Verificação de integridade por tamanho: se o `.dbc` já existir com o mesmo tamanho do FTP, é pulado. Senão, sobrescreve.
 - ✅ Pensado para ser executado de forma recorrente (orquestração/pipeline) para manter o repositório de DBC sempre atualizado.
-- ✅ Geração de tres datasets consolidados:
-  - `data/raw/raw_siops_exec_rreo.parquet`
-  - `data/raw/raw_siops_exec_saude.parquet`
-  - `data/raw/raw_siops_indicadores.parquet`
 
 ---
 
@@ -116,11 +112,34 @@ Atualização automática do dataset público [Onco-360](https://www.kaggle.com/
 
 ---
 
+`scripts/extract/dados_abertos/fetch_cnes_estabelecimentos.py`
+
+- ✅ Download e extração automatizada do CSV do CNES. 
+- ✅ Leitura do CSV e processamento direto em DataFrame. 
+- ✅ Geração de um único dataset consolidado: 
+  - `data/raw/raw_cnes_estabelecimentos.parquet`
+
+
+---
+
+`scripts/extract/dados_abertos/fetch_macroregiao_de_saude.py`
+
+- ✅ Download e extração automatizada do CSV com informações de macrorregião e região de saúde.  
+- ✅ Leitura do CSV e processamento direto em DataFrame.  
+- ✅ Geração de um único dataset consolidado:
+  - `data/raw/raw_macroregiao_de_saude.parquet`
+
+
+---
+
 `scripts/extract/dados_abertos/fetch_siops_orcamento_publico.py`
 
 - ✅ Baixa dados do SIOPS (Subfunção, RREO e Indicadores) via API pública.
 - ✅ Organiza CSVs por UF e período e gera Parquets consolidados em `data/raw`.
-- ✅ Remove coluna `municipio` e suporta execução manual ou via Airflow DAG.
+- ✅ Geração de tres datasets consolidados:
+  - `data/raw/raw_siops_exec_rreo.parquet`
+  - `data/raw/raw_siops_exec_saude.parquet`
+  - `data/raw/raw_siops_indicadores.parquet`
 
 
 ---

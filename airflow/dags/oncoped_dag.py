@@ -85,6 +85,18 @@ def process_datasus_sim_prelim_if_updated(ti=None):
         print("[INFO] Nenhuma atualização nos arquivos DBC. Pulando processamento.")
 
 # ----------------------------
+# Fetch CNES
+# ----------------------------
+def fetch_cnes():
+    os.system("python /opt/airflow/scripts/extract/dados_abertos/fetch_cnes_estabelecimentos.py")
+
+# ----------------------------
+# Fetch Macroregião de Saúde
+# ----------------------------
+def fetch_macroregiao():
+    os.system("python /opt/airflow/scripts/extract/dados_abertos/fetch_macroregiao_de_saude.py")
+
+# ----------------------------
 # Fetch SIOPS
 # ----------------------------
 def fetch_siops():
@@ -156,6 +168,16 @@ with DAG(
         python_callable=process_datasus_sim_prelim_if_updated
     )
 
+    fetch_task_cnes = PythonOperator(
+        task_id='fetch_cnes',
+        python_callable=fetch_cnes
+    )
+
+    fetch_task_macroregiao = PythonOperator(
+        task_id='fetch_macroregiao',
+        python_callable=fetch_macroregiao
+    )
+
     fetch_task_siops = PythonOperator(
         task_id='fetch_siops',
         python_callable=fetch_siops
@@ -174,5 +196,5 @@ with DAG(
     fetch_task_datasus_po >> process_task_datasus_po >> \
     fetch_task_datasus_sim >> process_task_datasus_sim >> \
     fetch_task_datasus_sim_prelim >> process_task_datasus_sim_prelim >> \
-    fetch_task_siops >> \
+    fetch_task_cnes >> fetch_task_macroregiao >> fetch_task_siops >> \
     sync_raw_to_bucket >> sync_raw_to_kaggle
