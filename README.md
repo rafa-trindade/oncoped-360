@@ -101,6 +101,10 @@ Atualização automática do dataset público [Onco-360](https://www.kaggle.com/
 - ✅ Download e atualização incremental dos arquivos `.dbc` do SIM DATASUS (Sistema de Informação de Mortalidade) Dados Preliminares, conectando ao FTP público (`ftp.datasus.gov.br/dissemin/publicos/SIM/PRELIM/DORES`).  
 - ✅ Verificação de integridade por tamanho: se o `.dbc` já existir com o mesmo tamanho do FTP, é pulado. Senão, sobrescreve.
 - ✅ Pensado para ser executado de forma recorrente (orquestração/pipeline) para manter o repositório de DBC sempre atualizado.
+- ✅ Geração de tres datasets consolidados:
+  - `data/raw/raw_siops_exec_rreo.parquet`
+  - `data/raw/raw_siops_exec_saude.parquet`
+  - `data/raw/raw_siops_indicadores.parquet`
 
 ---
 
@@ -109,6 +113,15 @@ Atualização automática do dataset público [Onco-360](https://www.kaggle.com/
 - ✅ Conversão automatizada de arquivos `.dbc` para `.dbf` usando a biblioteca `datasus-dbc` (Python), com processamento iterativo para melhor performance.
 - ✅ Geração de um único dataset consolidado:
   - `data/raw/raw_sistema_info_mortalidade_prelim.parquet`
+
+---
+
+`scripts/extract/dados_abertos/fetch_siops_orcamento_publico.py`
+
+- ✅ Baixa dados do SIOPS (Subfunção, RREO e Indicadores) via API pública.
+- ✅ Organiza CSVs por UF e período e gera Parquets consolidados em `data/raw`.
+- ✅ Remove coluna `municipio` e suporta execução manual ou via Airflow DAG.
+
 
 ---
 

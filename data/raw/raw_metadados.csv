@@ -6,6 +6,6 @@ data_extracao,arquivo,numero_registros,tamanho_mib
 2025-12-01 14:08:23,raw_inca_cancer_populacional.parquet,2368916,48.15
 2025-12-02 22:29:46,raw_sistema_info_mortalidade_prelim.parquet,1527369,93.93
 2025-12-02 22:29:46,raw_sistema_info_mortalidade.parquet,11688306,689.54
-2025-12-03 07:51:41,raw_siops_exec_rreo.parquet,33589,1.18
-2025-12-03 07:51:41,raw_siops_exec_saude.parquet,4350,0.15
-2025-12-03 07:51:41,raw_siops_indicadores.parquet,10159,0.22
+2025-12-03 20:54:05,raw_siops_exec_rreo.parquet,33589,0.96
+2025-12-03 20:54:05,raw_siops_exec_saude.parquet,4350,0.11
+2025-12-03 20:54:05,raw_siops_indicadores.parquet,10159,0.18

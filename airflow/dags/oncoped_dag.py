@@ -85,6 +85,12 @@ def process_datasus_sim_prelim_if_updated(ti=None):
         print("[INFO] Nenhuma atualização nos arquivos DBC. Pulando processamento.")
 
 # ----------------------------
+# Fetch SIOPS
+# ----------------------------
+def fetch_siops():
+    os.system("python /opt/airflow/scripts/extract/dados_abertos/fetch_siops_orcamento_publico.py")
+
+# ----------------------------
 # Sync Raw to Bucket / Kaggle
 # ----------------------------
 
@@ -150,6 +156,11 @@ with DAG(
         python_callable=process_datasus_sim_prelim_if_updated
     )
 
+    fetch_task_siops = PythonOperator(
+        task_id='fetch_siops',
+        python_callable=fetch_siops
+    )
+
     sync_raw_to_bucket = PythonOperator(
         task_id='load_raw_to_bucket',
         python_callable=load_raw_to_bucket
@@ -163,4 +174,5 @@ with DAG(
     fetch_task_datasus_po >> process_task_datasus_po >> \
     fetch_task_datasus_sim >> process_task_datasus_sim >> \
     fetch_task_datasus_sim_prelim >> process_task_datasus_sim_prelim >> \
+    fetch_task_siops >> \
     sync_raw_to_bucket >> sync_raw_to_kaggle
