@@ -7,6 +7,7 @@ import time
 import requests
 import pandas as pd
 from pathlib import Path
+from datetime import datetime
 
 # ------------------------------
 # Configurações gerais
@@ -36,9 +37,11 @@ UFS = {
     "SC": 42, "RS": 43, "MS": 50, "MT": 51, "GO": 52, "DF": 53
 }
 
-ANOS_SUBFUNCAO = list(range(2020, 2026))
-ANOS_RRO = list(range(2020, 2026))
-ANOS_INDICADOR = list(range(2013, 2026))
+ano_atual = datetime.now().year
+
+ANOS_SUBFUNCAO = list(range(2020, ano_atual + 1))
+ANOS_RRO = list(range(2020, ano_atual + 1))
+ANOS_INDICADOR = list(range(2013, ano_atual + 1))
 PERIODOS = [1, 2]
 
 # ------------------------------
