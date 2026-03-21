@@ -1,4 +1,4 @@
-![header](https://i.postimg.cc/52D7SRvD/onco-banner.png)
+![header](https://i.postimg.cc/9QcZ5t2G/onco-banner.png)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-c8922a?labelColor=0d2137)](LICENSE)
 [![Kaggle](https://img.shields.io/badge/Dataset-Kaggle-7ab3d4?labelColor=0d2137&logo=kaggle&logoColor=7ab3d4)](https://www.kaggle.com/datasets/rafatrindade/onco-360)
