@@ -1,7 +1,10 @@
-# 🎗️ oncoped-360
-`em desenvolvimento`
+![header](https://i.postimg.cc/52D7SRvD/onco-banner.png)
 
-Monitoramento de atendimentos, repasses públicos e estrutura hospitalar voltados à oncologia infantojuvenil no Brasil, integrando dados do DATASUS, INCA, CNES e Portal da Transparência.
+[![License: MIT](https://img.shields.io/badge/License-MIT-c8922a?labelColor=0d2137)](LICENSE)
+[![Kaggle](https://img.shields.io/badge/Dataset-Kaggle-7ab3d4?labelColor=0d2137&logo=kaggle&logoColor=7ab3d4)](https://www.kaggle.com/datasets/rafatrindade/onco-360)
+[![GitHub Stars](https://img.shields.io/github/stars/rafa-trindade/oncoped-360?style=flat&labelColor=0d2137&color=4a7fa5)](https://github.com/rafa-trindade/oncoped-360)
+
+`em desenvolvimento`
 
 ---
 
@@ -49,8 +52,6 @@ Abaixo está a visão geral da stack de dados utilizada no projeto:
 `raw_sistema_info_mortalidade_prelim.parquet` – base preliminar do último ano disponível no SIM/SUS (Sistema de Informação sobre Mortalidade), com registros de óbitos no Brasil, provenientes das declarações de óbito do DATASUS. *(quando disponível, atualização semanal)*
 
 `raw_sistema_info_mortalidade.parquet` – base bruta consolidada do SIM/SUS (Sistema de Informação sobre Mortalidade), com registros de óbitos no Brasil desde 2016 (Dados Consolidados CID10), provenientes das declarações de óbito do DATASUS. *(atualização anual)*
-
-`raw_metadados.csv` – arquivo de metadados gerado automaticamente pelo pipeline, com histórico das extrações, incluindo nome do arquivo, data/hora da extração, número de registros e tamanho (em MiB) de cada dataset presente no Data Lake. *(atualização semanal)*
 
 ---
 
